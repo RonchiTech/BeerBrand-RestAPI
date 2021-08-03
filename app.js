@@ -1,12 +1,14 @@
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-
+const users = require('./api/users');
 const products = require('./api/products');
 
-const MONGODB_URI =
-  'mongodb+srv://ronchinodejs:3vPLxB5YBlzDn0R0@cluster0.d74th.mongodb.net/beerbrand-dev';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 const app = express();
 
@@ -24,17 +26,17 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
   next();
 });
-
+app.use('/api', users);
 app.use('/api', products);
 app.use((req, res, next) => {
-  res.status(404).send( '404 Page not Found!' );
+  res.status(404).send('404 Page not Found!');
 });
 
 mongoose
   .connect(MONGODB_URI)
   .then(() => {
-    app.listen(3000, () => {
-      console.log('Server is running at port 3000');
+    app.listen(process.env.PORT, () => {
+      console.log(`Server is running at port ${process.env.PORT}`);
     });
   })
   .catch((err) => {

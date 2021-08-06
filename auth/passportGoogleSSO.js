@@ -23,17 +23,25 @@ passport.use(
       // };
       let user;
       try {
-        user = User.findOne({ googleId: profile.id });
+        // console.log('O USER');
+        // console.log('profile:::',profile);
+        user = await User.findOne({ googleId: profile.id });
+        // console.log('USER:::',user);
         if (!user) {
+          // console.log('NO USER');
           user = new User({
             fullName: `${profile.name.givenName} ${profile.name.familyName}`,
             email: profile.emails[0].value,
             googleId: profile.id,
             picture: profile.photos[0].value,
           });
+          // console.log('user saved');
           await user.save();
         }
-        if (user && user[0]) return cb(null, user && user[0]);
+        if (user) {
+          // console.log('USER');
+          return cb(null, user);
+        }
       } catch (e) {
         cb(e, null);
       }
@@ -42,18 +50,19 @@ passport.use(
 );
 
 passport.serializeUser((user, cb) => {
-  console.log('Serializing user:', user);
-  cb(null, user.id);
+  console.log('Serializing user:', user.googleId);
+  cb(null, user.googleId);
 });
 
 passport.deserializeUser(async (id, cb) => {
+  console.log('DeSerialized asd', id);
   try {
     const user = await User.findOne({ googleId: id });
-
     console.log('DeSerialized user', user);
     if (user) cb(null, user);
   } catch (err) {
     console.log('Error deserializing', err);
     cb(err, null);
   }
+
 });

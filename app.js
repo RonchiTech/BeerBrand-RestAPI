@@ -9,12 +9,17 @@ const bodyParser = require('body-parser');
 const users = require('./api/users');
 const products = require('./api/products');
 const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session)
 require('./auth/passportGoogleSSO');
 const passport = require('passport');
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
 const app = express();
+const store = new MongoDBStore({
+  uri: process.env.MONGODB_URI,
+  collection: 'sessions'
+})
 
 app.use(cors({ origin: 'http://localhost:3001', credentials: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -25,6 +30,7 @@ app.use(
     secret: 'secretkey123',
     resave: true,
     saveUninitialized: true,
+    store: store,
     cookie: { maxAge: 60 * 60 * 24 * 1000 },
   })
 );
@@ -55,6 +61,7 @@ app.use((req, res, next) => {
 app.use((error, req, res, next) => {
   console.log('ERR:::', error);
 });
+
 mongoose
   .connect(MONGODB_URI)
   .then(() => {

@@ -50,13 +50,17 @@ router.get(
 );
 
 router.get('/auth/user', middleware.isAuthenticated, (req, res) => {
-  // console.log('AUTH USER', req.user);
-  // console.log('AUTH session', req.session);
-  res.status(200).json({user: req.user, expiresIn: req.session.cookie._expires});
+  console.log('AUTH USER', req.user);
+  console.log('AUTH session', req.session);
+  res
+    .status(200)
+    .json({ user: req.user, expiresIn: req.session.cookie._expires });
 });
 router.get('/auth/logout', middleware.isAuthenticated, (req, res) => {
   req.logout();
   req.session.destroy();
   res.status(200).json(req.user);
+  console.log('AUTH USER', req.user);
+  console.log('AUTH session', req.session);
 });
 module.exports = router;

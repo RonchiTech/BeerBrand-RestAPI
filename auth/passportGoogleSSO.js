@@ -34,6 +34,7 @@ passport.use(
             email: profile.emails[0].value,
             googleId: profile.id,
             picture: profile.photos[0].value,
+            role: 'user',
           });
           // console.log('user saved');
           await user.save();
@@ -64,5 +65,4 @@ passport.deserializeUser(async (id, cb) => {
     console.log('Error deserializing', err);
     cb(err, null);
   }
-
 });

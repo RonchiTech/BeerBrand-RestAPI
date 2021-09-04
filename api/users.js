@@ -2,10 +2,14 @@ const express = require('express');
 const passport = require('passport');
 
 const middleware = require('../middleware/auth');
+const vendorAuth = require('../auth/vendor');
+
 const router = express.Router();
 
 const successLoginUrl = 'http://localhost:3001/login/success';
 const errorLoginUrl = 'http://localhost:3001/login/error';
+
+router.post('/login/vendor', vendorAuth.register);
 
 router.get(
   '/login/google',
@@ -56,6 +60,7 @@ router.get('/auth/user', middleware.isAuthenticated, (req, res) => {
     .status(200)
     .json({ user: req.user, expiresIn: req.session.cookie._expires });
 });
+
 router.get('/auth/logout', middleware.isAuthenticated, (req, res) => {
   req.logout();
   req.session.destroy();

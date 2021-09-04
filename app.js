@@ -5,11 +5,12 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const users = require('./api/users');
 const products = require('./api/products');
 const session = require('express-session');
-const MongoDBStore = require('connect-mongodb-session')(session)
+const MongoDBStore = require('connect-mongodb-session')(session);
 require('./auth/passportGoogleSSO');
 const passport = require('passport');
 
@@ -18,12 +19,12 @@ const MONGODB_URI = process.env.MONGODB_URI;
 const app = express();
 const store = new MongoDBStore({
   uri: process.env.MONGODB_URI,
-  collection: 'sessions'
-})
-
+  collection: 'sessions',
+});
+app.use(helmet());
 app.use(cors({ origin: 'http://localhost:3001', credentials: true }));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(cookieParser('secretkey123'));
 app.use(
   session({
@@ -59,14 +60,17 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-  console.log('ERR:::', error);
+  console.log('ERR:::', error.message);
+  const errorMessage = error.message;
+  const errorStatus = error.statusCode || 500;
+  res.status(errorStatus).json({ message: errorMessage });
 });
 
 mongoose
   .connect(MONGODB_URI)
   .then(() => {
     app.listen(process.env.PORT, () => {
-      console.log(`Server is running at port ${process.env.PORT}`);
+      console.log(`Server is running on port ${process.env.PORT}`);
     });
   })
   .catch((err) => {

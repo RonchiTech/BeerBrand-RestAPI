@@ -10,7 +10,7 @@ mongoose
   .connect(MONGODB_URI)
   .then(() => {
     server.listen(process.env.PORT, () => {
-      console.log(`Server is running at port ${process.env.PORT}`);
+      console.log(`Server is running at port ${process.env.PORT}...`);
     });
   })
   .catch((err) => {

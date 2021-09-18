@@ -66,13 +66,14 @@ app.use((error, req, res, next) => {
   res.status(errorStatus).json({ message: errorMessage });
 });
 
-mongoose
-  .connect(MONGODB_URI)
-  .then(() => {
-    app.listen(process.env.PORT, () => {
-      console.log(`Server is running on port ${process.env.PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+module.exports = app;
+// mongoose
+//   .connect(MONGODB_URI)
+//   .then(() => {
+//     app.listen(process.env.PORT, () => {
+//       console.log(`Server is running on port ${process.env.PORT}`);
+//     });
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
